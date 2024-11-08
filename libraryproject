@@ -1,0 +1,275 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+// Main Library Management System class
+public class LibrarySystem {
+    private static ArrayList<LibraryItem> libraryItems = new ArrayList<>();
+    private static ArrayList<User> users = new ArrayList<>();
+    private static Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        loadData(); // Load data from files
+
+        while (true) {
+            System.out.println("\n--- Welcome to the Library System ---");
+            System.out.println("1. Log in as Librarian");
+            System.out.println("2. Log in as Patron");
+            System.out.println("3. Exit");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    librarianMenu();
+                    break;
+                case 2:
+                    patronMenu();
+                    break;
+                case 3:
+                    saveData(); // Save data to files
+                    System.out.println("Exiting the system. Thank you!");
+                    return;
+                default:
+                    System.out.println("Invalid option, please try again.");
+            }
+        }
+    }
+
+    // Load data from files (basic mock implementation)
+    private static void loadData() {
+        // Code to load data from files (e.g., library items and user info)
+        System.out.println("Data loaded from files.");
+    }
+
+    // Save data to files (basic mock implementation)
+    private static void saveData() {
+        // Code to save data to files (e.g., library items and user info)
+        System.out.println("Data saved to files.");
+    }
+
+    // Librarian menu
+    private static void librarianMenu() {
+        while (true) {
+            System.out.println("\n--- Librarian Menu ---");
+            System.out.println("1. Add New Library Item");
+            System.out.println("2. Manage Fines");
+            System.out.println("3. Search for Items");
+            System.out.println("4. Log Out");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    addNewItem();
+                    break;
+                case 2:
+                    manageFines();
+                    break;
+                case 3:
+                    searchItems();
+                    break;
+                case 4:
+                    return;
+                default:
+                    System.out.println("Invalid option, please try again.");
+            }
+        }
+    }
+
+    // Patron menu
+    private static void patronMenu() {
+        while (true) {
+            System.out.println("\n--- Patron Menu ---");
+            System.out.println("1. Check Out Item");
+            System.out.println("2. Return Item");
+            System.out.println("3. Search for Items");
+            System.out.println("4. View Fines");
+            System.out.println("5. Log Out");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    checkOutItem();
+                    break;
+                case 2:
+                    returnItem();
+                    break;
+                case 3:
+                    searchItems();
+                    break;
+                case 4:
+                    viewFines();
+                    break;
+                case 5:
+                    return;
+                default:
+                    System.out.println("Invalid option, please try again.");
+            }
+        }
+    }
+
+    // Add a new item to the library
+    private static void addNewItem() {
+        System.out.print("Enter item type (1: Book, 2: Magazine, 3: DVD): ");
+        int type = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        System.out.print("Enter title: ");
+        String title = scanner.nextLine();
+
+        System.out.print("Enter author: ");
+        String author = scanner.nextLine();
+
+        System.out.print("Enter category: ");
+        String category = scanner.nextLine();
+
+        LibraryItem item;
+        switch (type) {
+            case 1:
+                item = new Book(title, author, category);
+                break;
+            case 2:
+                item = new Magazine(title, author, category);
+                break;
+            case 3:
+                item = new DVD(title, author, category);
+                break;
+            default:
+                System.out.println("Invalid item type.");
+                return;
+        }
+
+        libraryItems.add(item);
+        System.out.println("New item added to the library.");
+    }
+
+    // Manage fines (librarian-only functionality)
+    private static void manageFines() {
+        // Implement fine management (mock implementation)
+        System.out.println("Fines management feature coming soon.");
+    }
+
+    // Check out an item (patron-only functionality)
+    private static void checkOutItem() {
+        LibraryItem item = searchItems();
+        if (item != null && !item.isCheckedOut()) {
+            item.checkOut();
+            System.out.println("Item checked out successfully.");
+        } else {
+            System.out.println("Item is unavailable or does not exist.");
+        }
+    }
+
+    // Return an item (patron-only functionality)
+    private static void returnItem() {
+        LibraryItem item = searchItems();
+        if (item != null && item.isCheckedOut()) {
+            item.returnItem();
+            System.out.println("Item returned successfully.");
+        } else {
+            System.out.println("Invalid item or item is not checked out.");
+        }
+    }
+
+    // Search for library items
+    private static LibraryItem searchItems() {
+        System.out.print("Enter search term (title/author/category): ");
+        scanner.nextLine(); // Consume newline
+        String term = scanner.nextLine();
+
+        for (LibraryItem item : libraryItems) {
+            if (item.matches(term)) {
+                System.out.println(item);
+                return item;
+            }
+        }
+        System.out.println("No matching items found.");
+        return null;
+    }
+
+    // View fines (patron-only functionality)
+    private static void viewFines() {
+        // Implement fine viewing for patrons (mock implementation)
+        System.out.println("Viewing fines feature coming soon.");
+    }
+}
+
+// Abstract class for Library Items
+abstract class LibraryItem {
+    private String title;
+    private String author;
+    private String category;
+    private boolean checkedOut;
+
+    public LibraryItem(String title, String author, String category) {
+        this.title = title;
+        this.author = author;
+        this.category = category;
+        this.checkedOut = false;
+    }
+
+    public boolean isCheckedOut() {
+        return checkedOut;
+    }
+
+    public void checkOut() {
+        this.checkedOut = true;
+    }
+
+    public void returnItem() {
+        this.checkedOut = false;
+    }
+
+    public boolean matches(String term) {
+        return title.contains(term) || author.contains(term) || category.contains(term);
+    }
+
+    @Override
+    public String toString() {
+        return "Title: " + title + ", Author: " + author + ", Category: " + category + ", Checked Out: " + checkedOut;
+    }
+}
+
+// Subclasses for Book, Magazine, and DVD
+class Book extends LibraryItem {
+    public Book(String title, String author, String category) {
+        super(title, author, category);
+    }
+}
+
+class Magazine extends LibraryItem {
+    public Magazine(String title, String author, String category) {
+        super(title, author, category);
+    }
+}
+
+class DVD extends LibraryItem {
+    public DVD(String title, String author, String category) {
+        super(title, author, category);
+    }
+}
+
+// Abstract class for User
+abstract class User {
+    protected String name;
+    protected String role;
+
+    public User(String name, String role) {
+        this.name = name;
+        this.role = role;
+    }
+}
+
+class Librarian extends User {
+    public Librarian(String name) {
+        super(name, "Librarian");
+    }
+}
+
+class Patron extends User {
+    public Patron(String name) {
+        super(name, "Patron");
+    }
+}
